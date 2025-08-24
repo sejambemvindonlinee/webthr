@@ -1,0 +1,457 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laurentino e Leite Sociedade de Advogados</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <!-- Custom CSS -->
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            line-height: 1.6;
+        }
+        .hero-section {
+            background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1589829545856-d10d557cf0f5?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            padding: 120px 0;
+            text-align: center;
+        }
+        .hero-section h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+        }
+        .navbar {
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .service-card, .team-card {
+            transition: transform 0.3s, box-shadow 0.3s;
+            border: none;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .service-card:hover, .team-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        .contact-section {
+            background-color: #f8f9fa;
+            padding: 80px 0;
+        }
+        .testimonials-section {
+            background-color: #ffffff;
+            padding: 80px 0;
+        }
+        .footer {
+            background-color: #1a252f;
+            color: white;
+            padding: 40px 0;
+        }
+        .btn-primary {
+            background-color: #1a73e8;
+            border: none;
+            padding: 10px 20px;
+        }
+        .btn-primary:hover {
+            background-color: #1557b0;
+        }
+        .map-container {
+            position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+            overflow: hidden;
+        }
+        .map-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        /* Icon Styling */
+        .icon-container {
+            font-size: 3rem;
+            color: #1a73e8;
+            background-color: #f8f9fa;
+            padding: 20px;
+            text-align: center;
+        }
+        /* Image Fallback */
+        img {
+            background-color: #f0f0f0;
+            display: block;
+        }
+        img::after {
+            content: 'Imagem não carregada';
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            width: 100%;
+            background: #f0f0f0;
+            color: #333;
+            font-size: 1rem;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">Laurentino e Leite</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#home">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#about">Sobre</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#services">Serviços</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#team">Equipe</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#testimonials">Depoimentos</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#contact">Contato</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero-section">
+        <div class="container">
+            <h1>Laurentino e Leite Sociedade de Advogados</h1>
+            <p class="lead">Soluções jurídicas personalizadas com excelência, ética e compromisso</p>
+            <a href="#contact" class="btn btn-primary btn-lg mt-3">Fale Conosco</a>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="py-5">
+        <div class="container">
+            <h2 class="text-center mb-5">Sobre Nós</h2>
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <h3>Nossa Missão</h3>
+                    <p>A Laurentino e Leite Sociedade de Advogados, sediada em Fortaleza, CE, tem como missão oferecer serviços jurídicos de excelência, com foco em soluções personalizadas que atendam às necessidades específicas de cada cliente. Com uma abordagem ética e transparente, buscamos construir relações de confiança e entregar resultados consistentes.</p>
+                    <h3>Nossa História</h3>
+                    <p>Fundado com o propósito de oferecer assessoria jurídica de alto nível, nosso escritório combina tradição e inovação. Localizado no coração do bairro Aldeota, atuamos em diversas áreas do direito, sempre com dedicação e compromisso com nossos clientes.</p>
+                    <h3>Por que Escolher-nos?</h3>
+                    <ul>
+                        <li>Equipe altamente qualificada e especializada</li>
+                        <li>Atendimento personalizado e focado no cliente</li>
+                        <li>Compromisso com ética e transparência</li>
+                        <li>Resultados comprovados em diversas áreas do direito</li>
+                    </ul>
+                </div>
+                <div class="col-md-6 text-center">
+                    <div class="icon-container">
+                        <i class="fas fa-balance-scale"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section id="services" class="py-5 bg-light">
+        <div class="container">
+            <h2 class="text-center mb-5">Nossos Serviços</h2>
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <div class="card service-card">
+                        <div class="icon-container">
+                            <i class="fas fa-briefcase"></i>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title">Direito Empresarial</h5>
+                            <p class="card-text">Oferecemos assessoria completa para empresas, incluindo elaboração e revisão de contratos, planejamento societário, fusões e aquisições, além de consultoria em compliance e governança corporativa. Nosso objetivo é proteger os interesses de nossos clientes e garantir conformidade legal.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="card service-card">
+                        <div class="icon-container">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title">Direito Trabalhista</h5>
+                            <p class="card-text">Atuamos na defesa de empregadores e empregados em questões trabalhistas, incluindo litígios, negociações coletivas, auditorias trabalhistas e consultoria preventiva para evitar conflitos. Nosso foco é garantir soluções justas e eficazes.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="card service-card">
+                        <div class="icon-container">
+                            <i class="fas fa-gavel"></i>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title">Direito Civil</h5>
+                            <p class="card-text">Nossa equipe atua em questões de direito civil, como disputas contratuais, responsabilidade civil, direitos do consumidor, e questões imobiliárias. Oferecemos suporte jurídico em negociações, mediações e litígios, sempre buscando os melhores resultados.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="card service-card">
+                        <div class="icon-container">
+                            <i class="fas fa-calculator"></i>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title">Direito Tributário</h5>
+                            <p class="card-text">Prestamos consultoria em planejamento tributário, recuperação de créditos fiscais e defesa em processos administrativos e judiciais. Nosso objetivo é otimizar a carga tributária de nossos clientes de forma legal e estratégica.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="card service-card">
+                        <div class="icon-container">
+                            <i class="fas fa-home"></i>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title">Direito de Família</h5>
+                            <p class="card-text">Atuamos em questões sensíveis como divórcios, guarda de filhos, pensão alimentícia e planejamento sucessório, sempre com empatia e profissionalismo para garantir soluções que respeitem os interesses das partes envolvidas.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="card service-card">
+                        <div class="icon-container">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title">Direito Penal Empresarial</h5>
+                            <p class="card-text">Oferecemos defesa em casos de crimes empresariais, como fraudes, lavagem de dinheiro e crimes tributários, com estratégias personalizadas para proteger os interesses de nossos clientes.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Team Section -->
+    <section id="team" class="py-5">
+        <div class="container">
+            <h2 class="text-center mb-5">Nossa Equipe</h2>
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <div class="card team-card">
+                        <div class="icon-container">
+                            <i class="fas fa-user-tie"></i>
+                        </div>
+                        <div class="card-body text-center">
+                            <h5 class="card-title">Dr. João Laurentino</h5>
+                            <p class="card-text">Sócio-fundador, especialista em Direito Empresarial e Tributário com mais de 20 anos de experiência.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="card team-card">
+                        <img src="https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" class="card-img-top" alt="Dra. Maria Leite">
+                        <div class="card-body text-center">
+                            <h5 class="card-title">Dra. Maria Leite</h5>
+                            <p class="card-text">Sócia, especialista em Direito Civil e de Família, reconhecida por sua abordagem humanizada.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="card team-card">
+                        <div class="icon-container">
+                            <i class="fas fa-user-tie"></i>
+                        </div>
+                        <div class="card-body text-center">
+                            <h5 class="card-title">Dr. Carlos Almeida</h5>
+                            <p class="card-text">Advogado sênior, especialista em Direito Trabalhista e Penal Empresarial.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section id="testimonials" class="testimonials-section">
+        <div class="container">
+            <h2 class="text-center mb-5">Depoimentos</h2>
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <p class="card-text">"A equipe da Laurentino e Leite foi excepcional na resolução do nosso caso empresarial. Profissionalismo e competência incomparáveis!"</p>
+                            <p class="card-text"><small class="text-muted">— Ana Souza, CEO de Empresa X</small></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <p class="card-text">"Recebi um atendimento atencioso e humanizado em um caso familiar delicado. Recomendo fortemente!"</p>
+                            <p class="card-text"><small class="text-muted">— Pedro Lima, Cliente</small></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <p class="card-text">"A consultoria tributária da Laurentino e Leite nos ajudou a economizar significativamente. Excelente serviço!"</p>
+                            <p class="card-text"><small class="text-muted">— Mariana Costa, CFO de Empresa Y</small></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="contact-section">
+        <div class="container">
+            <h2 class="text-center mb-5">Contato</h2>
+            <div class="row">
+                <div class="col-md-6 mb-4">
+                    <h4>Informações de Contato</h4>
+                    <p><strong>CNPJ:</strong> 26.893.971/0001-00</p>
+                    <p><strong>Endereço:</strong> Rua Vicente Linhares, 521, Salas 1006 e 1007, Aldeota, Fortaleza, CE, 60135-270</p>
+                    <p><strong>Telefone:</strong> (85) 1234-5678</p>
+                    <p><strong>Email:</strong> contato@laurentinoeleite.com.br</p>
+                    <p><strong>Horário de Atendimento:</strong> Segunda a Sexta, 8h às 18h</p>
+                    <div class="map-container mt-4">
+                        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3657.123456789!2d-38.496123!3d-3.735678!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x7c749f7e5d3c1%3A0x9f2b6a4c3d2e1!2sRua%20Vicente%20Linhares%2C%20521%2C%20Aldeota%2C%20Fortaleza%2C%20CE%2C%2060135-270!5e0!3m2!1spt-BR!2sbr!4v1698781234567!5m2!1spt-BR!2sbr" allowfullscreen="" loading="lazy"></iframe>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <h4>Envie Sua Mensagem</h4>
+                    <div>
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Nome</label>
+                            <input type="text" class="form-control" id="name" placeholder="Seu nome" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="email" placeholder="Seu email" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="phone" class="form-label">Telefone</label>
+                            <input type="tel" class="form-control" id="phone" placeholder="Seu telefone">
+                        </div>
+                        <div class="mb-3">
+                            <label for="message" class="form-label">Mensagem</label>
+                            <textarea class="form-control" id="message" rows="5" placeholder="Sua mensagem" required></textarea>
+                        </div>
+                        <button type="button" class="btn btn-primary">Enviar Mensagem</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <h5>Laurentino e Leite</h5>
+                    <p>Compromisso com a excelência jurídica desde nossa fundação.</p>
+                </div>
+                <div class="col-md-4">
+                    <h5>Contato</h5>
+                    <p>Rua Vicente Linhares, 521, Salas 1006 e 1007, Aldeota, Fortaleza, CE, 60135-270</p>
+                    <p>Email: contato@laurentinoeleite.com.br</p>
+                    <p>Telefone: (85) 1234-5678</p>
+                </div>
+                <div class="col-md-4">
+                    <h5>Links Úteis</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#services" class="text-white">Serviços</a></li>
+                        <li><a href="#team" class="text-white">Equipe</a></li>
+                        <li><a href="#contact" class="text-white">Contato</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="text-center mt-4">
+                <p>&copy; 2025 Laurentino e Leite Sociedade de Advogados. Todos os direitos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS for form submission alert and image error handling -->
+    <script>
+        document.querySelector('.btn-primary').addEventListener('click', function() {
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const message = document.getElementById('message').value;
+            if (name && email && message) {
+                alert('Mensagem enviada com sucesso! Entraremos em contato em breve.');
+            } else {
+                alert('Por favor, preencha todos os campos obrigatórios.');
+            }
+        });
+
+        // Handle image load errors for Dra. Maria Leite
+        const mariaImage = document.querySelector('img[alt="Dra. Maria Leite"]');
+        if (mariaImage) {
+            mariaImage.addEventListener('error', function() {
+                this.src = 'https://via.placeholder.com/600x400?text=Imagem+Dra.+Maria+Leite';
+                this.alt = 'Imagem não disponível para Dra. Maria Leite';
+            });
+        }
+    </script>
+</body>
+</html>
